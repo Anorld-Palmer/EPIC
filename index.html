@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#030817">
+
+  <title>EPIC — Share your world</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --blue: #087cff;
+      --cyan: #00e5ff;
+      --background: #030817;
+      --text: #f4f7ff;
+      --muted: #9bb6df;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      background:
+        radial-gradient(
+          ellipse at 50% 30%,
+          #061735 0%,
+          #030817 55%,
+          #01040c 100%
+        );
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      overflow-x: hidden;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 520px;
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: auto;
+      padding: 65px 28px 35px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* EPIC BRAND */
+
+    .brand {
+      text-align: center;
+    }
+
+    .logo {
+      font-size: clamp(58px, 15vw, 82px);
+      font-weight: 900;
+      letter-spacing: -4px;
+      line-height: 1.1;
+    }
+
+    .logo span {
+      color: var(--blue);
+      text-shadow: 0 0 25px #087cff55;
+    }
+
+    .language {
+      margin-top: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      background: transparent;
+      border: none;
+      font-size: 17px;
+      padding: 8px;
+    }
+
+    .arrow {
+      width: 9px;
+      height: 9px;
+      border-right: 2px solid var(--muted);
+      border-bottom: 2px solid var(--muted);
+      transform: rotate(45deg) translateY(-3px);
+    }
+
+    /* BLACK HOLE */
+
+    .planet-area {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 52px 0 54px;
+    }
+
+    .planet {
+      width: 150px;
+      height: 150px;
+      border: 2px solid #087cff55;
+      border-radius: 50%;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 35px #006aff10;
+    }
+
+    .planet-core {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: #01030b;
+      border: 3px solid var(--cyan);
+      box-shadow:
+        0 0 12px var(--cyan),
+        0 0 28px var(--blue),
+        inset 0 0 15px #004cff55;
+      z-index: 2;
+    }
+
+    .orbit {
+      position: absolute;
+      width: 135px;
+      height: 44px;
+      border: 3px solid #087cff;
+      border-radius: 50%;
+      transform: rotate(-23deg);
+      box-shadow: 0 0 12px var(--blue);
+    }
+
+    .orbit-two {
+      width: 112px;
+      height: 31px;
+      border-color: var(--cyan);
+      transform: rotate(-23deg);
+      box-shadow: 0 0 12px var(--cyan);
+    }
+
+    /* FORM */
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .field {
+      height: 76px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 0 20px;
+      border: 2px solid #164b83;
+      border-radius: 29px;
+      background: #06112099;
+      transition: border-color 0.2s;
+    }
+
+    .field:focus-within {
+      border-color: var(--blue);
+      box-shadow: 0 0 16px #087cff22;
+    }
+
+    .field-icon {
+      font-size: 25px;
+      color: #d6e6ff;
+      width: 25px;
+      text-align: center;
+    }
+
+    .field input {
+      width: 100%;
+      min-width: 0;
+      color: white;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-size: 16px;
+    }
+
+    .field input::placeholder {
+      color: var(--muted);
+      opacity: 1;
+    }
+
+    /* BUTTONS */
+
+    .primary {
+      height: 74px;
+      border: none;
+      border-radius: 40px;
+      background: linear-gradient(110deg, #087cff, #0870f5);
+      color: white;
+      font-size: 22px;
+      font-weight: 700;
+      box-shadow: 0 0 25px #087cff18;
+      transition: transform 0.2s, filter 0.2s;
+    }
+
+    .primary:active {
+      transform: scale(0.98);
+      filter: brightness(1.15);
+    }
+
+    .forgot {
+      align-self: center;
+      border: none;
+      background: transparent;
+      color: #e1eaff;
+      font-size: 17px;
+      padding: 24px 12px;
+    }
+
+    .spacer {
+      flex: 1;
+      min-height: 100px;
+    }
+
+    .secondary {
+      width: 100%;
+      min-height: 76px;
+      border: 2px solid #078cff;
+      border-radius: 40px;
+      background: transparent;
+      color: #078cff;
+      font-size: 20px;
+      font-weight: 700;
+      transition: background 0.2s;
+    }
+
+    .secondary:active {
+      background: #087cff18;
+    }
+
+    .notice {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    /* RESPONSIVE DESIGN */
+
+    @media (max-height: 760px) {
+      .app {
+        padding-top: 35px;
+      }
+
+      .planet-area {
+        margin: 30px 0;
+      }
+
+      .planet {
+        width: 120px;
+        height: 120px;
+      }
+
+      .planet-core {
+        width: 58px;
+        height: 58px;
+      }
+
+      .orbit {
+        width: 110px;
+        height: 36px;
+      }
+
+      .orbit-two {
+        width: 92px;
+        height: 26px;
+      }
+
+      .field {
+        height: 66px;
+      }
+
+      .primary,
+      .secondary {
+        height: 66px;
+        min-height: 66px;
+      }
+
+      .spacer {
+        min-height: 45px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .app {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .field {
+        gap: 12px;
+        padding: 0 15px;
+      }
+
+      .field input {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="app">
+
+    <header class="brand">
+      <h1 class="logo">EPI<span>C</span></h1>
+
+      <button class="language" id="languageButton" type="button">
+        <span id="languageText">English (United States)</span>
+        <span class="arrow"></span>
+      </button>
+    </header>
+
+    <section class="planet-area" aria-label="EPIC planet logo">
+      <div class="planet">
+        <div class="orbit"></div>
+        <div class="orbit orbit-two"></div>
+        <div class="planet-core"></div>
+      </div>
+    </section>
+
+    <section id="loginScreen">
+
+      <form class="login-form" id="loginForm">
+
+        <label class="field">
+          <span class="field-icon" aria-hidden="true">♧</span>
+          <input
+            id="loginEmail"
+            type="text"
+            placeholder="Mobile number or email address"
+            autocomplete="username"
+            required
+          >
+        </label>
+
+        <label class="field">
+          <span class="field-icon" aria-hidden="true">♙</span>
+          <input
+            id="loginPassword"
+            type="password"
+            placeholder="Password"
+            autocomplete="current-password"
+            required
+          >
+        </label>
+
+        <button class="primary" type="submit">
+          Log in
+        </button>
+
+        <button class="forgot" id="forgotButton" type="button">
+          Forgotten password?
+        </button>
+
+      </form>
+
+    </section>
+
+    <section id="registerScreen" hidden>
+
+      <form class="login-form" id="registerForm">
+
+        <label class="field">
+          <span class="field-icon">👤</span>
+          <input
+            id="fullName"
+            type="text"
+            placeholder="Full name"
+            autocomplete="name"
+            required
+          >
+        </label>
+
+        <label class="field">
+          <span class="field-icon">✉</span>
+          <input
+            id="registerEmail"
+            type="email"
+            placeholder="Email address"
+            autocomplete="email"
+            required
+          >
+        </label>
+
+        <label class="field">
+          <span class="field-icon">♙</span>
+          <input
+            id="registerPassword"
+            type="password"
+            placeholder="Create password (8+ characters)"
+            minlength="8"
+            autocomplete="new-password"
+            required
+          >
+        </label>
+
+        <button class="primary" type="submit">
+          Create account
+        </button>
+
+        <button class="forgot" id="backToLogin" type="button">
+          Back to log in
+        </button>
+
+      </form>
+
+    </section>
+
+    <div class="spacer"></div>
+
+    <button class="secondary" id="createButton" type="button">
+      Create new account
+    </button>
+
+    <p class="notice" id="message" role="status" aria-live="polite"></p>
+
+  </main>
+
+  <script>
+    const loginScreen = document.getElementById("loginScreen");
+    const registerScreen = document.getElementById("registerScreen");
+    const createButton = document.getElementById("createButton");
+    const message = document.getElementById("message");
+
+    createButton.addEventListener("click", () => {
+      loginScreen.hidden = true;
+      registerScreen.hidden = false;
+      createButton.hidden = true;
+      message.textContent = "";
+    });
+
+    document.getElementById("backToLogin").addEventListener("click", () => {
+      registerScreen.hidden = true;
+      loginScreen.hidden = false;
+      createButton.hidden = false;
+      message.textContent = "";
+    });
+
+    document.getElementById("loginForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      message.textContent =
+        "The login interface is ready. Account authentication still needs to be connected.";
+    });
+
+    document.getElementById("registerForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      message.textContent =
+        "The registration interface is ready. Secure account registration still needs to be connected.";
+    });
+
+    document.getElementById("forgotButton").addEventListener("click", () => {
+      message.textContent =
+        "Password recovery will be available after account authentication is connected.";
+    });
+
+    document.getElementById("languageButton").addEventListener("click", () => {
+      message.textContent =
+        "English (United States) is the selected language.";
+    });
+  </script>
+
+</body>
+</html>
