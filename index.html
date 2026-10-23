@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#030817">
+  <meta name="description" content="EPIC — Share your world.">
+
+  <title>EPIC — Share your world</title>
+
+  <style>
+    :root {
+      --blue: #087cff;
+      --cyan: #00e5ff;
+      --bg: #030817;
+      --panel: #071426;
+      --text: #f4f7ff;
+      --muted: #9bb6df;
+      --border: #164b83;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      background:
+        radial-gradient(ellipse at 50% 25%, #0b2044 0%, transparent 48%),
+        linear-gradient(150deg, #030817, #01040c);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    button, input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button:focus-visible,
+    input:focus-visible {
+      outline: 2px solid var(--cyan);
+      outline-offset: 3px;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 520px;
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: auto;
+      padding: 45px 26px 30px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* BRAND */
+
+    .brand {
+      text-align: center;
+    }
+
+    .logo {
+      font-size: clamp(62px, 16vw, 82px);
+      font-weight: 900;
+      letter-spacing: -4px;
+      line-height: 1.1;
+    }
+
+    .logo span {
+      color: var(--blue);
+      text-shadow: 0 0 25px #087cff55;
+    }
+
+    .language {
+      margin-top: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+      color: var(--muted);
+      background: transparent;
+      border: none;
+      font-size: 16px;
+    }
+
+    .arrow {
+      width: 9px;
+      height: 9px;
+      border-right: 2px solid var(--muted);
+      border-bottom: 2px solid var(--muted);
+      transform: rotate(45deg) translateY(-3px);
+    }
+
+    /* GLOWING PLANET */
+
+    .planet-area {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 42px 0 46px;
+    }
+
+    .planet {
+      width: 145px;
+      height: 145px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid #087cff44;
+      border-radius: 50%;
+      box-shadow: 0 0 45px #087cff12;
+    }
+
+    .planet-core {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: #01030b;
+      border: 3px solid var(--cyan);
+      box-shadow:
+        0 0 12px var(--cyan),
+        0 0 30px var(--blue),
+        inset 0 0 18px #004cff66;
+      z-index: 2;
+    }
+
+    .orbit {
+      position: absolute;
+      width: 138px;
+      height: 43px;
+      border: 3px solid var(--blue);
+      border-radius: 50%;
+      transform: rotate(-25deg);
+      box-shadow: 0 0 12px #087cff88;
+    }
+
+    .orbit-two {
+      width: 115px;
+      height: 33px;
+      border-color: var(--cyan);
+      box-shadow: 0 0 12px #00e5ff66;
+    }
+
+    /* FORMS */
+
+    .section-title {
+      font-size: 25px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .section-description {
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 22px;
+    }
+
+    .form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .field {
+      min-height: 70px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 19px;
+      border: 1.5px solid var(--border);
+      border-radius: 28px;
+      background: #061120cc;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .field:focus-within {
+      border-color: var(--blue);
+      box-shadow: 0 0 16px #087cff22;
+    }
+
+    .field-icon {
+      color: #d6e6ff;
+      font-size: 23px;
+      width: 25px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .field input {
+      min-width: 0;
+      width: 100%;
+      color: white;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-size: 15px;
+    }
+
+    .field input::placeholder {
+      color: var(--muted);
+      opacity: 1;
+    }
+
+    /* BUTTONS */
+
+    .primary {
+      min-height: 70px;
+      width: 100%;
+      border: none;
+      border-radius: 40px;
+      background: linear-gradient(110deg, #087cff, #0868ee);
+      color: white;
+      font-size: 21px;
+      font-weight: 700;
+      box-shadow: 0 8px 25px #087cff22;
+      transition: filter 0.2s, transform 0.2s;
+    }
+
+    .primary:active {
+      transform: scale(0.985);
+      filter: brightness(1.15);
+    }
+
+    .primary:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    .forgot {
+      align-self: center;
+      padding: 16px 10px;
+      border: none;
+      background: transparent;
+      color: #dce8ff;
+      font-size: 16px;
+    }
+
+    .secondary {
+      min-height: 70px;
+      width: 100%;
+      border: 1.5px solid var(--blue);
+      border-radius: 40px;
+      background: transparent;
+      color: #168cff;
+      font-size: 19px;
+      font-weight: 700;
+    }
+
+    .secondary:active {
+      background: #087cff18;
+    }
+
+    .spacer {
+      flex: 1;
+      min-height: 45px;
+    }
+
+    .message {
+      margin-top: 18px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 14px;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .message.error {
+      color: #ff9caa;
+    }
+
+    .message.success {
+      color: #65edbd;
+    }
+
+    /* HOME SCREEN */
+
+    .home-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+
+    .home-header .logo {
+      font-size: 38px;
+      letter-spacing: -2px;
+    }
+
+    .logout {
+      background: transparent;
+      color: #8ebcff;
+      border: 1px solid var(--border);
+      border-radius: 25px;
+      padding: 10px 16px;
+    }
+
+    .welcome-card {
+      padding: 25px 20px;
+      border: 1px solid var(--border);
+      border-radius: 25px;
+      background: linear-gradient(145deg, #0c1e3b, #061020);
+    }
+
+    .welcome-card h2 {
+      font-size: 25px;
+      margin-bottom: 12px;
+    }
+
+    .welcome-card p {
+      color: var(--muted);
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+
+    .home-heading {
+      margin: 30px 0 14px;
+      font-size: 19px;
+    }
+
+    .feature-card {
+      padding: 18px;
+      margin-bottom: 12px;
+      border: 1px solid #164b8355;
+      border-radius: 20px;
+      background: #071426;
+    }
+
+    .feature-card h3 {
+      font-size: 17px;
+      margin-bottom: 8px;
+    }
+
+    .feature-card p {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+    @media (max-height: 760px) {
+      .app {
+        padding-top: 28px;
+      }
+
+      .planet-area {
+        margin: 26px 0;
+      }
+
+      .planet {
+        width: 115px;
+        height: 115px;
+      }
+
+      .planet-core {
+        width: 56px;
+        height: 56px;
+      }
+
+      .orbit {
+        width: 110px;
+        height: 35px;
+      }
+
+      .orbit-two {
+        width: 92px;
+        height: 27px;
+      }
+
+      .field,
+      .primary,
+      .secondary {
+        min-height: 62px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .app {
+        padding-left: 19px;
+        padding-right: 19px;
+      }
+
+      .field {
+        gap: 11px;
+        padding: 0 14px;
+      }
+
+      .field input {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="app">
+
+    <!-- BRAND -->
+    <header class="brand" id="brandHeader">
+      <h1 class="logo">EPI<span>C</span></h1>
+
+      <button class="language" id="languageButton" type="button">
+        <span>English (United States)</span>
+        <span class="arrow"></span>
+      </button>
+    </header>
+
+    <!-- PLANET -->
+    <section class="planet-area" id="planetArea"
+      aria-label="EPIC glowing planet">
+      <div class="planet">
+        <div class="orbit"></div>
+        <div class="orbit orbit-two"></div>
+        <div class="planet-core"></div>
+      </div>
+    </section>
+
+    <!-- LOGIN -->
+    <section id="loginScreen">
+
+      <form class="form" id="loginForm">
+        <label class="field">
+          <span class="field-icon" aria-hidden="true">✉</span>
+          <input
+            id="loginEmail"
+            type="email"
+            placeholder="Email address"
+            autocomplete="username"
+            required
+          >
+        </label>
+
+        <label class="field">
+          <span class="field-icon" aria-hidden="true">♙</span>
+          <input
+            id="loginPassword"
+            type="password"
+            placeholder="Password"
+            autocomplete="current-password"
+            required
+          >
+        </label>
+
+        <button class="primary" id="loginButton" type="submit">
+          Log in
+        </button>
+
+        <button class="forgot" id="forgotButton" type="button">
+          Forgotten password?
+        </button>
+      </form>
+
+    </section>
+
+    <!-- REGISTRATION -->
+    <section id="registerScreen" hidden>
+      <h2 class="section-title">Join EPIC</h2>
+      <p class="section-description">
+        Create your account and share your world.
+      </p>
+
+      <form class="form" id="registerForm">
+        <label class="field">
+          <span class="field-icon" aria-hidden="true">♙</span>
+          <input
+            id="fullName"
+            type="text"
+            placeholder="Full name"
+            autocomplete="name"
+            maxlength="100"
+            required
+          >
+        </label>
+
+        <label class="field">
+          <span class="field-icon" aria-hidden="true">✉</span>
+          <input
+            id="registerEmail"
+            type="email"
+            placeholder="Email address"
+            autocomplete="email"
+            required
+          >
+        </label>
+
+        <label class="field">
+          <span class="field-icon" aria-hidden="true">♙</span>
+          <input
+            id="registerPassword"
+            type="password"
+            placeholder="Create password (8+ characters)"
+            minlength="8"
+            autocomplete="new-password"
+            required
+          >
+        </label>
+
+        <button class="primary" id="registerButton" type="submit">
+          Create account
+        </button>
+
+        <button class="forgot" id="backToLogin" type="button">
+          Already have an account? Log in
+        </button>
+      </form>
+    </section>
+
+    <!-- PASSWORD RECOVERY -->
+    <section id="recoveryScreen" hidden>
+      <h2 class="section-title">Reset password</h2>
+      <p class="section-description">
+        Enter your email address to request a password recovery link.
+      </p>
+
+      <form class="form" id="recoveryForm">
+        <label class="field">
+          <span class="field-icon" aria-hidden="true">✉</span>
+          <input
+            id="recoveryEmail"
+            type="email"
+            placeholder="Email address"
+            autocomplete="email"
+            required
+          >
+        </label>
+
+        <button class="primary" id="recoveryButton" type="submit">
+          Send recovery email
+        </button>
+
+        <button class="forgot" id="backFromRecovery" type="button">
+          Back to log in
+        </button>
+      </form>
+    </section>
+
+    <!-- PASSWORD UPDATE -->
+    <section id="updatePasswordScreen" hidden>
+      <h2 class="section-title">Choose a new password</h2>
+      <p class="section-description">
+        Enter a new password for your EPIC account.
+      </p>
+
+      <form class="form" id="updatePasswordForm">
+        <label class="field">
+          <span class="field-icon" aria-hidden="true">♙</span>
+          <input
+            id="newPassword"
+            type="password"
+            placeholder="New password (8+ characters)"
+            minlength="8"
+            autocomplete="new-password"
+            required
+          >
+        </label>
+
+        <button class="primary" id="updatePasswordButton" type="submit">
+          Update password
+        </button>
+      </form>
+    </section>
+
+    <!-- HOME -->
+    <section id="homeScreen" hidden>
+      <div class="home-header">
+        <h1 class="logo">EPI<span style="color:#087cff">C</span></h1>
+        <button class="logout" id="logoutButton" type="button">
+          Log out
+        </button>
+      </div>
+
+      <div class="welcome-card">
+        <h2 id="welcomeTitle">Welcome to EPIC!</h2>
+        <p id="welcomeEmail"></p>
+        <p style="margin-top:12px">
+          Your space to share your world starts here.
+        </p>
+      </div>
+
+      <h2 class="home-heading">Your EPIC space</h2>
+
+      <div class="feature-card">
+        <h3>🌎 Your world</h3>
+        <p>Your personal EPIC account is ready.</p>
+      </div>
+
+      <div class="feature-card">
+        <h3>✨ More coming soon</h3>
+        <p>We're building the social feed, posts, profiles and messaging.</p>
+      </div>
+    </section>
+
+    <div class="spacer" id="bottomSpacer"></div>
+
+    <button class="secondary" id="createButton" type="button">
+      Create new account
+    </button>
+
+    <p class="message" id="message"
+      role="status" aria-live="polite"></p>
+
+  </main>
+
+  <!-- Supabase JavaScript library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    "use strict";
+
+    /*
+      EPIC CONFIGURATION
+
+      Replace both placeholders with your existing Supabase
+      Project URL and publishable key.
+
+      Use the publishable key, NOT a secret/service_role key.
+    */
+
+    const SUPABASE_URL = "PASTE_YOUR_PROJECT_URL_HERE";
+    const SUPABASE_PUBLISHABLE_KEY =
+      "PASTE_YOUR_PUBLISHABLE_KEY_HERE";
+
+    const message = document.getElementById("message");
+
+    const screens = {
+      login: document.getElementById("loginScreen"),
+      register: document.getElementById("registerScreen"),
+      recovery: document.getElementById("recoveryScreen"),
+      updatePassword: document.getElementById("updatePasswordScreen"),
+      home: document.getElementById("homeScreen")
+    };
+
+    const createButton = document.getElementById("createButton");
+    const bottomSpacer = document.getElementById("bottomSpacer");
+    const brandHeader = document.getElementById("brandHeader");
+    const planetArea = document.getElementById("planetArea");
+
+    let supabase = null;
+    let recoveryMode = false;
+    let authReady = false;
+
+    function showMessage(text, type = "") {
+      message.textContent = text;
+      message.className = "message";
+
+      if (type) {
+        message.classList.add(type);
+      }
+    }
+
+    function setBusy(buttonId, busy, busyText, normalText) {
+      const button = document.getElementById(buttonId);
+
+      button.disabled = busy;
+      button.textContent = busy ? busyText : normalText;
+    }
+
+    function showScreen(name) {
+      Object.entries(screens).forEach(([key, element]) => {
+        element.hidden = key !== name;
+      });
+
+      const showHome = name === "home";
+
+      createButton.hidden = showHome || name !== "login";
+      bottomSpacer.hidden = showHome;
+      brandHeader.hidden = showHome;
+      planetArea.hidden = showHome;
+
+      showMessage("");
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function friendlyError(error) {
+      if (!error) return "Something went wrong. Please try again.";
+
+      if (error.status === 429) {
+        return "Too many attempts. Please wait and try again.";
+      }
+
+      if (error.message &&
+          error.message.toLowerCase().includes("invalid login credentials")) {
+        return "Incorrect email or password. Please try again.";
+      }
+
+      if (error.message &&
+          error.message.toLowerCase().includes("email not confirmed")) {
+        return "Please verify your email before logging in.";
+      }
+
+      return error.message || "Something went wrong. Please try again.";
+    }
+
+    function showHome(user) {
+      const metadata = user.user_metadata || {};
+
+      document.getElementById("welcomeTitle").textContent =
+        "Welcome to EPIC, " + (metadata.full_name || "friend") + "!";
+
+      document.getElementById("welcomeEmail").textContent =
+        user.email || "";
+
+      showScreen("home");
+    }
+
+    async function checkExistingSession() {
+      const { data, error } = await supabase.auth.getSession();
+
+      if (error) {
+        showMessage(friendlyError(error), "error");
+        return;
+      }
+
+      if (data.session && data.session.user && !recoveryMode) {
+        showHome(data.session.user);
+      }
+    }
+
+    async function initialiseEpic() {
+      if (!window.supabase) {
+        showMessage(
+          "EPIC could not load its authentication library. Check your internet connection and refresh.",
+          "error"
+        );
+        return;
+      }
+
+      if (
+        SUPABASE_URL.includes("PASTE_YOUR") ||
+        SUPABASE_PUBLISHABLE_KEY.includes("PASTE_YOUR")
+      ) {
+        showMessage(
+          "Setup needed: add your Supabase Project URL and publishable key in the code.",
+          "error"
+        );
+        return;
+      }
+
+      try {
+        supabase = window.supabase.createClient(
+          SUPABASE_URL,
+          SUPABASE_PUBLISHABLE_KEY,
+          {
+            auth: {
+              persistSession: true,
+              autoRefreshToken: true,
+              detectSessionInUrl: true
+            }
+          }
+        );
+
+        authReady = true;
+
+        supabase.auth.onAuthStateChange((event, session) => {
+          if (event === "PASSWORD_RECOVERY") {
+            recoveryMode = true;
+            showScreen("updatePassword");
+            showMessage(
+              "Enter your new password below.",
+              "success"
+            );
+            return;
+          }
+
+          if (event === "SIGNED_OUT") {
+            recoveryMode = false;
+            showScreen("login");
+          }
+        });
+
+        await checkExistingSession();
+
+      } catch (error) {
+        showMessage(friendlyError(error), "error");
+      }
+    }
+
+    // Open registration
+    createButton.addEventListener("click", () => {
+      showScreen("register");
+    });
+
+    // Return to login
+    document.getElementById("backToLogin").addEventListener(
+      "click",
+      () => showScreen("login")
+    );
+
+    // Open password recovery
+    document.getElementById("forgotButton").addEventListener(
+      "click",
+      () => {
+        document.getElementById("recoveryEmail").value =
+          document.getElementById("loginEmail").value.trim();
+
+        showScreen("recovery");
+      }
+    );
+
+    document.getElementById("backFromRecovery").addEventListener(
+      "click",
+      () => showScreen("login")
+    );
+
+    // Register account
+    document.getElementById("registerForm").addEventListener(
+      "submit",
+      async (event) => {
+        event.preventDefault();
+
+        if (!authReady) {
+          showMessage(
+            "Authentication is not configured. Check your Supabase settings.",
+            "error"
+          );
+          return;
+        }
+
+        const fullName =
+          document.getElementById("fullName").value.trim();
+
+        const email =
+          document.getElementById("registerEmail").value.trim();
+
+        const password =
+          document.getElementById("registerPassword").value;
+
+        if (!fullName) {
+          showMessage("Enter your full name.", "error");
+          return;
+        }
+
+        setBusy(
+          "registerButton", true, "Creating account...", "Create account"
+        );
+
+        try {
+          const { data, error } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+              data: {
+                full_name: fullName
+              },
+              emailRedirectTo: window.location.origin +
+                window.location.pathname
+            }
+          });
+
+          if (error) {
+            showMessage(friendlyError(error), "error");
+            return;
+          }
+
+          if (data.session && data.user) {
+            showHome(data.user);
+          } else {
+            showMessage(
+              "Registration received. Check your email for a verification link, then return here to log in.",
+              "success"
+            );
+
+            document.getElementById("loginEmail").value = email;
+            showScreen("login");
+
+            showMessage(
+              "Check your email for the verification link before logging in.",
+              "success"
+            );
+          }
+
+        } catch (error) {
+          showMessage(friendlyError(error), "error");
+        } finally {
+          setBusy(
+            "registerButton", false, "Creating account...", "Create account"
+          );
+        }
+      }
+    );
+
+    // Login
+    document.getElementById("loginForm").addEventListener(
+      "submit",
+      async (event) => {
+        event.preventDefault();
+
+        if (!authReady) {
+          showMessage(
+            "Authentication is not configured. Check your Supabase settings.",
+            "error"
+          );
+          return;
+        }
+
+        const email =
+          document.getElementById("loginEmail").value.trim();
+
+        const password =
+          document.getElementById("loginPassword").value;
+
+        setBusy("loginButton", true, "Logging in...", "Log in");
+
+        try {
+          const { data, error } =
+            await supabase.auth.signInWithPassword({
+              email,
+              password
+            });
+
+          if (error) {
+            showMessage(friendlyError(error), "error");
+            return;
+          }
+
+          if (data.user) {
+            showHome(data.user);
+          }
+
+        } catch (error) {
+          showMessage(friendlyError(error), "error");
+        } finally {
+          setBusy("loginButton", false, "Logging in...", "Log in");
+        }
+      }
+    );
+
+    // Send password recovery email
+    document.getElementById("recoveryForm").addEventListener(
+      "submit",
+      async (event) => {
+        event.preventDefault();
+
+        if (!authReady) {
+          showMessage("Authentication is not configured.", "error");
+          return;
+        }
+
+        const email =
+          document.getElementById("recoveryEmail").value.trim();
+
+        setBusy(
+          "recoveryButton",
+          true,
+          "Sending...",
+          "Send recovery email"
+        );
+
+        try {
+          const { error } =
+            await supabase.auth.resetPasswordForEmail(email, {
+              redirectTo: window.location.origin +
+                window.location.pathname
+            });
+
+          if (error) {
+            showMessage(friendlyError(error), "error");
+            return;
+          }
+
+          showMessage(
+            "If the address is eligible, a recovery email will arrive shortly. Check your inbox.",
+            "success"
+          );
+
+        } catch (error) {
+          showMessage(friendlyError(error), "error");
+        } finally {
+          setBusy(
+            "recoveryButton",
+            false,
+            "Sending...",
+            "Send recovery email"
+          );
+        }
+      }
+    );
+
+    // Update password after following a recovery link
+    document.getElementById("updatePasswordForm").addEventListener(
+      "submit",
+      async (event) => {
+        event.preventDefault();
+
+        if (!authReady) {
+          showMessage("Authentication is not configured.", "error");
+          return;
+        }
+
+        const password =
+          document.getElementById("newPassword").value;
+
+        setBusy(
+          "updatePasswordButton",
+          true,
+          "Updating...",
+          "Update password"
+        );
+
+        try {
+          const { data, error } = await supabase.auth.updateUser({
+            password
+          });
+
+          if (error) {
+            showMessage(friendlyError(error), "error");
+            return;
+          }
+
+          recoveryMode = false;
+
+          showMessage(
+            "Your password has been updated successfully.",
+            "success"
+          );
+
+          if (data.user) {
+            showHome(data.user);
+          } else {
+            showScreen("login");
+          }
+
+        } catch (error) {
+          showMessage(friendlyError(error), "error");
+        } finally {
+          setBusy(
+            "updatePasswordButton",
+            false,
+            "Updating...",
+            "Update password"
+          );
+        }
+      }
+    );
+
+    // Logout
+    document.getElementById("logoutButton").addEventListener(
+      "click",
+      async () => {
+        if (!authReady) return;
+
+        const { error } = await supabase.auth.signOut();
+
+        if (error) {
+          showMessage(friendlyError(error), "error");
+          return;
+        }
+
+        document.getElementById("loginPassword").value = "";
+        showScreen("login");
+        showMessage("You have logged out successfully.", "success");
+      }
+    );
+
+    // Language label
+    document.getElementById("languageButton").addEventListener(
+      "click",
+      () => {
+        showMessage(
+          "English (United States) is currently selected."
+        );
+      }
+    );
+
+    // Start EPIC
+    initialiseEpic();
+  </script>
+
+</body>
+</html>
