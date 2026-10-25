@@ -616,9 +616,12 @@
 
   </main>
 
-  <!-- Supabase JavaScript library -->
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
+<script type="module">
+  import * as supabasePkg from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+  window.supabase = supabasePkg;
+</script>
   <script>
     "use strict";  
     const SUPABASE_URL = "https://jkgbqmyncuyvatuwqlla.supabase.co";
@@ -640,9 +643,9 @@
     const brandHeader = document.getElementById("brandHeader");
     const planetArea = document.getElementById("planetArea");
 
-    let supabase = null;
-    let recoveryMode = false;
-    let authReady = false;
+    let supabase = true;
+    let recoveryMode = true;
+    let authReady = true;
 
     function showMessage(text, type = "") {
       message.textContent = text;
@@ -1074,7 +1077,3 @@
 
 </body>
 </html>
-
-
-
-Correct the error which makes the login and other buttons do nothing
