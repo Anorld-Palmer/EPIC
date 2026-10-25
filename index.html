@@ -616,27 +616,15 @@
 
   </main>
 
-  <!-- Supabase JavaScript library -->
+    <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
   <script>
     "use strict";
-
-    /*
-      EPIC CONFIGURATION
-
-      Replace both placeholders with your existing Supabase
-      Project URL and publishable key.
-
-      Use the publishable key, NOT a secret/service_role key.
-    */
-
     const SUPABASE_URL = "https://jkgbqmyncuyvatuwqlla.supabase.co";
-    const SUPABASE_PUBLISHABLE_KEY =
-      "sb_publishable_cRrD2yj00dtV6ReR_1OQ7g_NpyKvVC9";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_cRrD2yj00dtV6ReR_1OQ7g_NpyKvVC9";
 
     const message = document.getElementById("message");
-
     const screens = {
       login: document.getElementById("loginScreen"),
       register: document.getElementById("registerScreen"),
@@ -644,443 +632,179 @@
       updatePassword: document.getElementById("updatePasswordScreen"),
       home: document.getElementById("homeScreen")
     };
-
     const createButton = document.getElementById("createButton");
     const bottomSpacer = document.getElementById("bottomSpacer");
     const brandHeader = document.getElementById("brandHeader");
     const planetArea = document.getElementById("planetArea");
 
-    let supabase = null;
+    let supabaseClient = null;
     let recoveryMode = false;
     let authReady = false;
 
     function showMessage(text, type = "") {
       message.textContent = text;
-      message.className = "message";
-
-      if (type) {
-        message.classList.add(type);
-      }
+      message.className = "message" + (type ? " " + type : "");
+      console.log("[EPIC]", text);
     }
-
     function setBusy(buttonId, busy, busyText, normalText) {
       const button = document.getElementById(buttonId);
-
+      if(!button) return;
       button.disabled = busy;
       button.textContent = busy ? busyText : normalText;
     }
-
     function showScreen(name) {
       Object.entries(screens).forEach(([key, element]) => {
         element.hidden = key !== name;
       });
-
       const showHome = name === "home";
-
       createButton.hidden = showHome || name !== "login";
       bottomSpacer.hidden = showHome;
       brandHeader.hidden = showHome;
       planetArea.hidden = showHome;
-
-      showMessage("");
-
+      if(name !== "home") showMessage("");
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
-
     function friendlyError(error) {
-      if (!error) return "Something went wrong. Please try again.";
-
-      if (error.status === 429) {
-        return "Too many attempts. Please wait and try again.";
-      }
-
-      if (error.message &&
-          error.message.toLowerCase().includes("invalid login credentials")) {
-        return "Incorrect email or password. Please try again.";
-      }
-
-      if (error.message &&
-          error.message.toLowerCase().includes("email not confirmed")) {
-        return "Please verify your email before logging in.";
-      }
-
-      return error.message || "Something went wrong. Please try again.";
+      if (!error) return "Something went wrong.";
+      if (error.status === 429) return "Too many attempts. Wait and try again.";
+      if (error.message && error.message.toLowerCase().includes("invalid login")) return "Incorrect email or password.";
+      if (error.message && error.message.toLowerCase().includes("email not confirmed")) return "Please verify your email first.";
+      return error.message || "Something went wrong.";
     }
-
     function showHome(user) {
       const metadata = user.user_metadata || {};
-
-      document.getElementById("welcomeTitle").textContent =
-        "Welcome to EPIC, " + (metadata.full_name || "friend") + "!";
-
-      document.getElementById("welcomeEmail").textContent =
-        user.email || "";
-
+      document.getElementById("welcomeTitle").textContent = "Welcome to EPIC, " + (metadata.full_name || "friend") + "!";
+      document.getElementById("welcomeEmail").textContent = user.email || "";
       showScreen("home");
     }
-
     async function checkExistingSession() {
-      const { data, error } = await supabase.auth.getSession();
-
-      if (error) {
-        showMessage(friendlyError(error), "error");
-        return;
-      }
-
+      const { data, error } = await supabaseClient.auth.getSession();
+      if (error) { showMessage(friendlyError(error), "error"); return; }
       if (data.session && data.session.user && !recoveryMode) {
         showHome(data.session.user);
       }
     }
-
     async function initialiseEpic() {
-      if (!window.supabase) {
-        showMessage(
-          "EPIC could not load its authentication library. Check your internet connection and refresh.",
-          "error"
-        );
+      // UMD can be window.supabase OR just supabase
+      const supabaseLib = window.supabase || window.Supabase || self.supabase;
+      if (!supabaseLib || !supabaseLib.createClient) {
+        showMessage("Auth library failed to load. Refresh, or check if CDN is blocked.", "error");
+        console.error("supabase lib not found", window.supabase);
         return;
       }
-
-      if (
-        SUPABASE_URL.includes("PASTE_YOUR") ||
-        SUPABASE_PUBLISHABLE_KEY.includes("PASTE_YOUR")
-      ) {
-        showMessage(
-          "Setup needed: add your Supabase Project URL and publishable key in the code.",
-          "error"
-        );
-        return;
-      }
-
       try {
-        supabase = window.supabase.createClient(
-          SUPABASE_URL,
-          SUPABASE_PUBLISHABLE_KEY,
-          {
-            auth: {
-              persistSession: true,
-              autoRefreshToken: true,
-              detectSessionInUrl: true
-            }
-          }
-        );
-
+        supabaseClient = supabaseLib.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+          auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+        });
         authReady = true;
+        showMessage("EPIC ready. Please log in.", "success");
+        setTimeout(()=> showMessage(""), 2000);
 
-        supabase.auth.onAuthStateChange((event, session) => {
+        supabaseClient.auth.onAuthStateChange((event, session) => {
           if (event === "PASSWORD_RECOVERY") {
             recoveryMode = true;
             showScreen("updatePassword");
-            showMessage(
-              "Enter your new password below.",
-              "success"
-            );
-            return;
+            showMessage("Enter your new password below.", "success");
           }
-
           if (event === "SIGNED_OUT") {
             recoveryMode = false;
             showScreen("login");
           }
         });
-
         await checkExistingSession();
-
       } catch (error) {
         showMessage(friendlyError(error), "error");
+        console.error(error);
       }
     }
 
-    // Open registration
-    createButton.addEventListener("click", () => {
-      showScreen("register");
+    createButton.addEventListener("click", () => showScreen("register"));
+    document.getElementById("backToLogin").addEventListener("click", () => showScreen("login"));
+    document.getElementById("forgotButton").addEventListener("click", () => {
+      document.getElementById("recoveryEmail").value = document.getElementById("loginEmail").value.trim();
+      showScreen("recovery");
+    });
+    document.getElementById("backFromRecovery").addEventListener("click", () => showScreen("login"));
+
+    document.getElementById("registerForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!authReady) { showMessage("Auth not ready yet. Wait 2 seconds.", "error"); return; }
+      const fullName = document.getElementById("fullName").value.trim();
+      const email = document.getElementById("registerEmail").value.trim();
+      const password = document.getElementById("registerPassword").value;
+      if (!fullName) { showMessage("Enter your full name.", "error"); return; }
+      setBusy("registerButton", true, "Creating account...", "Create account");
+      try {
+        const { data, error } = await supabaseClient.auth.signUp({
+          email, password,
+          options: { data: { full_name: fullName }, emailRedirectTo: window.location.href }
+        });
+        if (error) { showMessage(friendlyError(error), "error"); return; }
+        if (data.session && data.user) { showHome(data.user); }
+        else {
+          showMessage("Check your email for verification link.", "success");
+          document.getElementById("loginEmail").value = email;
+          showScreen("login");
+        }
+      } catch (error) { showMessage(friendlyError(error), "error"); }
+      finally { setBusy("registerButton", false, "Creating account...", "Create account"); }
     });
 
-    // Return to login
-    document.getElementById("backToLogin").addEventListener(
-      "click",
-      () => showScreen("login")
-    );
+    document.getElementById("loginForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!authReady) { showMessage("Auth not ready yet.", "error"); return; }
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value;
+      setBusy("loginButton", true, "Logging in...", "Log in");
+      try {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) { showMessage(friendlyError(error), "error"); return; }
+        if (data.user) showHome(data.user);
+      } catch (error) { showMessage(friendlyError(error), "error"); }
+      finally { setBusy("loginButton", false, "Logging in...", "Log in"); }
+    });
 
-    // Open password recovery
-    document.getElementById("forgotButton").addEventListener(
-      "click",
-      () => {
-        document.getElementById("recoveryEmail").value =
-          document.getElementById("loginEmail").value.trim();
+    document.getElementById("recoveryForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!authReady) return;
+      const email = document.getElementById("recoveryEmail").value.trim();
+      setBusy("recoveryButton", true, "Sending...", "Send recovery email");
+      try {
+        const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: window.location.href });
+        if (error) { showMessage(friendlyError(error), "error"); return; }
+        showMessage("If the address is eligible, a recovery email will arrive shortly.", "success");
+      } catch (error) { showMessage(friendlyError(error), "error"); }
+      finally { setBusy("recoveryButton", false, "Sending...", "Send recovery email"); }
+    });
 
-        showScreen("recovery");
-      }
-    );
+    document.getElementById("updatePasswordForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const password = document.getElementById("newPassword").value;
+      setBusy("updatePasswordButton", true, "Updating...", "Update password");
+      try {
+        const { data, error } = await supabaseClient.auth.updateUser({ password });
+        if (error) { showMessage(friendlyError(error), "error"); return; }
+        recoveryMode = false;
+        showMessage("Password updated.", "success");
+        if (data.user) showHome(data.user); else showScreen("login");
+      } catch (error) { showMessage(friendlyError(error), "error"); }
+      finally { setBusy("updatePasswordButton", false, "Updating...", "Update password"); }
+    });
 
-    document.getElementById("backFromRecovery").addEventListener(
-      "click",
-      () => showScreen("login")
-    );
+    document.getElementById("logoutButton").addEventListener("click", async () => {
+      if (!authReady) return;
+      const { error } = await supabaseClient.auth.signOut();
+      if (error) { showMessage(friendlyError(error), "error"); return; }
+      document.getElementById("loginPassword").value = "";
+      showScreen("login");
+      showMessage("Logged out.", "success");
+    });
 
-    // Register account
-    document.getElementById("registerForm").addEventListener(
-      "submit",
-      async (event) => {
-        event.preventDefault();
+    document.getElementById("languageButton").addEventListener("click", () => {
+      showMessage("English (United States) is currently selected.");
+    });
 
-        if (!authReady) {
-          showMessage(
-            "Authentication is not configured. Check your Supabase settings.",
-            "error"
-          );
-          return;
-        }
-
-        const fullName =
-          document.getElementById("fullName").value.trim();
-
-        const email =
-          document.getElementById("registerEmail").value.trim();
-
-        const password =
-          document.getElementById("registerPassword").value;
-
-        if (!fullName) {
-          showMessage("Enter your full name.", "error");
-          return;
-        }
-
-        setBusy(
-          "registerButton", true, "Creating account...", "Create account"
-        );
-
-        try {
-          const { data, error } = await supabase.auth.signUp({
-            email,
-            password,
-            options: {
-              data: {
-                full_name: fullName
-              },
-              emailRedirectTo: window.location.origin +
-                window.location.pathname
-            }
-          });
-
-          if (error) {
-            showMessage(friendlyError(error), "error");
-            return;
-          }
-
-          if (data.session && data.user) {
-            showHome(data.user);
-          } else {
-            showMessage(
-              "Registration received. Check your email for a verification link, then return here to log in.",
-              "success"
-            );
-
-            document.getElementById("loginEmail").value = email;
-            showScreen("login");
-
-            showMessage(
-              "Check your email for the verification link before logging in.",
-              "success"
-            );
-          }
-
-        } catch (error) {
-          showMessage(friendlyError(error), "error");
-        } finally {
-          setBusy(
-            "registerButton", false, "Creating account...", "Create account"
-          );
-        }
-      }
-    );
-
-    // Login
-    document.getElementById("loginForm").addEventListener(
-      "submit",
-      async (event) => {
-        event.preventDefault();
-
-        if (!authReady) {
-          showMessage(
-            "Authentication is not configured. Check your Supabase settings.",
-            "error"
-          );
-          return;
-        }
-
-        const email =
-          document.getElementById("loginEmail").value.trim();
-
-        const password =
-          document.getElementById("loginPassword").value;
-
-        setBusy("loginButton", true, "Logging in...", "Log in");
-
-        try {
-          const { data, error } =
-            await supabase.auth.signInWithPassword({
-              email,
-              password
-            });
-
-          if (error) {
-            showMessage(friendlyError(error), "error");
-            return;
-          }
-
-          if (data.user) {
-            showHome(data.user);
-          }
-
-        } catch (error) {
-          showMessage(friendlyError(error), "error");
-        } finally {
-          setBusy("loginButton", false, "Logging in...", "Log in");
-        }
-      }
-    );
-
-    // Send password recovery email
-    document.getElementById("recoveryForm").addEventListener(
-      "submit",
-      async (event) => {
-        event.preventDefault();
-
-        if (!authReady) {
-          showMessage("Authentication is not configured.", "error");
-          return;
-        }
-
-        const email =
-          document.getElementById("recoveryEmail").value.trim();
-
-        setBusy(
-          "recoveryButton",
-          true,
-          "Sending...",
-          "Send recovery email"
-        );
-
-        try {
-          const { error } =
-            await supabase.auth.resetPasswordForEmail(email, {
-              redirectTo: window.location.origin +
-                window.location.pathname
-            });
-
-          if (error) {
-            showMessage(friendlyError(error), "error");
-            return;
-          }
-
-          showMessage(
-            "If the address is eligible, a recovery email will arrive shortly. Check your inbox.",
-            "success"
-          );
-
-        } catch (error) {
-          showMessage(friendlyError(error), "error");
-        } finally {
-          setBusy(
-            "recoveryButton",
-            false,
-            "Sending...",
-            "Send recovery email"
-          );
-        }
-      }
-    );
-
-    // Update password after following a recovery link
-    document.getElementById("updatePasswordForm").addEventListener(
-      "submit",
-      async (event) => {
-        event.preventDefault();
-
-        if (!authReady) {
-          showMessage("Authentication is not configured.", "error");
-          return;
-        }
-
-        const password =
-          document.getElementById("newPassword").value;
-
-        setBusy(
-          "updatePasswordButton",
-          true,
-          "Updating...",
-          "Update password"
-        );
-
-        try {
-          const { data, error } = await supabase.auth.updateUser({
-            password
-          });
-
-          if (error) {
-            showMessage(friendlyError(error), "error");
-            return;
-          }
-
-          recoveryMode = false;
-
-          showMessage(
-            "Your password has been updated successfully.",
-            "success"
-          );
-
-          if (data.user) {
-            showHome(data.user);
-          } else {
-            showScreen("login");
-          }
-
-        } catch (error) {
-          showMessage(friendlyError(error), "error");
-        } finally {
-          setBusy(
-            "updatePasswordButton",
-            false,
-            "Updating...",
-            "Update password"
-          );
-        }
-      }
-    );
-
-    // Logout
-    document.getElementById("logoutButton").addEventListener(
-      "click",
-      async () => {
-        if (!authReady) return;
-
-        const { error } = await supabase.auth.signOut();
-
-        if (error) {
-          showMessage(friendlyError(error), "error");
-          return;
-        }
-
-        document.getElementById("loginPassword").value = "";
-        showScreen("login");
-        showMessage("You have logged out successfully.", "success");
-      }
-    );
-
-    // Language label
-    document.getElementById("languageButton").addEventListener(
-      "click",
-      () => {
-        showMessage(
-          "English (United States) is currently selected."
-        );
-      }
-    );
-
-    // Start EPIC
     initialiseEpic();
   </script>
-
 </body>
 </html>
